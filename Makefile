@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I. -Wall -std=c99 -ledit -lm
-DEPS = main.h common.h
-OBJ = main.o
+DEPS = main.h common.h value.h
+OBJ = main.o value.o parse.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
