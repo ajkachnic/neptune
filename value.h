@@ -45,7 +45,7 @@ struct tvalue {
 // Functions
 TValue* val_num(long x); 
 
-TValue* val_err(char* msg);
+TValue* val_err(char* fmt, ...);
 
 TValue* val_sym(char* sym);
 
@@ -54,3 +54,8 @@ TValue* val_list();
 void val_del(TValue* v);
 
 void val_push(TValue* root, TValue* push);
+
+void val_expr_print(TValue* v, char open, char close); 
+
+void val_print(TValue* v); 
+void val_println(TValue* v);

@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,10 +13,21 @@ TValue* val_num(long x) {
   return v;
 }
 
-TValue* val_err(char* msg) {
+TValue* val_err(char* fmt, ...) {
   TValue* v = malloc(sizeof(TValue));
   v->tt = VAL_ERR;
-  v->err = msg;
+
+  va_list va;
+  va_start(va, fmt);
+
+  v->err = malloc(512);
+
+  vsnprintf(v->err, 511, fmt, va);
+
+  v->err = realloc(v->err, strlen(v->err) + 1);
+
+  va_end(va);
+
   return v;
 }
 
@@ -64,5 +76,42 @@ void val_push(TValue* root, TValue* push) {
   // Expand the internal cell
   root->cell = realloc(root->cell, sizeof(TValue*) * root->count);
   root->cell[root->count - 1] = push;
-  return root;
+}
+
+void val_print(TValue* v);
+
+void val_expr_print(TValue* v, char open, char close) {
+  putchar(open);
+  for (int i = 0; i < v->count; i++) {
+
+    /* Print Value contained within */
+    val_print(v->cell[i]);
+
+    /* Don't print trailing space if last element */
+    if (i != (v->count - 1)) {
+      putchar(' ');
+    }
+  }
+  putchar(close);
+}
+
+void val_print(TValue* v) {
+  switch (v->tt) {
+  case VAL_NUM:
+    printf("%li", v->num);
+    break;
+  case VAL_ERR:
+    printf("Error: %s", v->err);
+    break;
+  case VAL_SYM:
+    printf("%s", v->sym);
+    break;
+  case VAL_LIST:
+    val_expr_print(v, '(', ')');
+    break;
+  }
+}
+void val_println(TValue* v) {
+  val_print(v);
+  putchar('\n');
 }
